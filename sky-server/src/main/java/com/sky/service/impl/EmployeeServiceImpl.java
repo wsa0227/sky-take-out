@@ -1,17 +1,30 @@
 package com.sky.service.impl;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import org.aspectj.weaver.ast.Var;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -54,6 +67,67 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //3、返回实体对象
         return employee;
+    }
+
+    /**
+     * 添加员工
+     *
+     * @param employeeDTO
+     */
+    @Override
+    public void addEmp(EmployeeDTO employeeDTO) {
+        //新建一个employee对象
+        Employee employee = new Employee();
+//        将传来的dto拷贝到ployee对象中
+        BeanUtils.copyProperties(employeeDTO, employee);
+//        补充数据
+        employee.setPassword(DigestUtils.md5DigestAsHex((PasswordConstant.DEFAULT_PASSWORD).getBytes()));
+        employee.setStatus(StatusConstant.ENABLE);
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setCreateUser(BaseContext.getCurrentId());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+//        调用mapper层insert方法
+        employeeMapper.insert(employee);
+
+
+    }
+
+    /**
+     * 业务层
+     *
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult page(EmployeePageQueryDTO employeePageQueryDTO) {
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+
+        Page<Employee> p = employeeMapper.selectPage(employeePageQueryDTO);
+        long total = p.getTotal();
+        List<Employee> records = p.getResult();
+        return new PageResult(total, records);
+    }
+
+    /**
+     * 启用或者禁用员工账号
+     *
+     * @param status
+     */
+    @Override
+    public void operationStatus(Integer status, long id) {
+        Employee build = Employee.builder().id(id).status(status).build();
+        employeeMapper.upsdate(build);
+    }
+
+    @Override
+    public Employee findById(long id) {
+       return employeeMapper.selectId(id);
+    }
+
+    @Override
+    public void updateData(Employee employee) {
+        employeeMapper.upsdate(employee);
     }
 
 }
