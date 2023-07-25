@@ -51,6 +51,7 @@ public class DishController {
 
     /**
      * 删除菜品
+     *
      * @param ids
      * @return
      */
@@ -87,4 +88,19 @@ public class DishController {
         dishService.update(dishDTO);
         return Result.success();
     }
+
+    /**
+     * 根据菜品分类id查询数据
+     * @param categoryId
+     * @return
+     */
+    @ApiOperation("根据菜品分类id查询菜品")
+    @GetMapping("/list")
+    public Result list(Long categoryId) {
+
+        List<Dish> list = dishService.list(categoryId);
+
+        return Result.success(list);
+    }
+
 }

@@ -13,6 +13,7 @@ import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +35,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 增加菜品
+     *
      * @param dishDTO
      */
     @Override
@@ -97,6 +99,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 根据Id查询数据
+     *
      * @param id
      * @return
      */
@@ -134,5 +137,11 @@ public class DishServiceImpl implements DishService {
 
 
         }
+    }
+
+    @Override
+    public List<Dish> list(Long categoryId) {
+        List<Dish> list = dishMapper.list(categoryId);
+        return  list;
     }
 }

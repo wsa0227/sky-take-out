@@ -10,7 +10,7 @@
                 #{updateUser}, #{status})
     </insert>
     <select id="page" resultType="com.sky.vo.DishVO">
-        select * from dish left join category on dish.category_id=category.id
+        select dish.*,category.name as categoryName from dish left join category on dish.category_id=category.id
         <where>
             <if test="name!=null and name!=''">
                 and dish.name like concat('%',#{name},'%')
@@ -23,7 +23,7 @@
             </if>
         </where>
     </select>
-
+<!--修改菜品-->
     <update id="update">
         update dish
         <set>
