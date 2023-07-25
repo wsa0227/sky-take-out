@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -17,7 +16,6 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
-import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,10 +81,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        补充数据
         employee.setPassword(DigestUtils.md5DigestAsHex((PasswordConstant.DEFAULT_PASSWORD).getBytes()));
         employee.setStatus(StatusConstant.ENABLE);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setCreateUser(BaseContext.getCurrentId());
+//        employee.setUpdateUser(BaseContext.getCurrentId());
 //        调用mapper层insert方法
         employeeMapper.insert(employee);
 
@@ -117,17 +115,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void operationStatus(Integer status, long id) {
         Employee build = Employee.builder().id(id).status(status).build();
-        employeeMapper.upsdate(build);
+        employeeMapper.update(build);
     }
 
     @Override
     public Employee findById(long id) {
-       return employeeMapper.selectId(id);
+        return employeeMapper.selectId(id);
     }
 
     @Override
-    public void updateData(Employee employee) {
-        employeeMapper.upsdate(employee);
+    public void updateData(EmployeeDTO employeeDTO) {
+
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+//        employee.setUpdateUser(BaseContext.getCurrentId());
+//        employee.setUpdateTime(LocalDateTime.now());
+        employeeMapper.update(employee);
     }
 
 }
