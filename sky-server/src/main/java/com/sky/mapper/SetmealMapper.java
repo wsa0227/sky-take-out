@@ -9,6 +9,7 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -66,6 +67,7 @@ public interface SetmealMapper {
     @Select("select *  from setmeal where id = #{id}")
     Setmeal selectSetmealById(Integer id);
 
+    @Options(useGeneratedKeys = true,keyProperty = "id")
     @AutoFill(OperationType.UPDATE)
     void update(Setmeal setmeal);
 }

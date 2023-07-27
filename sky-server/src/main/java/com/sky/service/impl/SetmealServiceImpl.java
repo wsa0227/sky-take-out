@@ -91,7 +91,7 @@ public class SetmealServiceImpl implements SetmealService {
             }
             setmealMapper.deleteById(id);
 //            删除套餐关系表中的数据
-            setmealDishesMapper.deleteById((long)id);
+            setmealDishesMapper.deleteById((long) id);
         }
     }
 
@@ -118,33 +118,33 @@ public class SetmealServiceImpl implements SetmealService {
      *
      * @param setmealDTO
      */
+    @Transactional
     @Override
     public void update(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
         setmealMapper.update(setmeal);
 
-
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         if (setmealDishes != null && setmealDishes.size() > 0) {
             setmealDishesMapper.deleteById(setmealDTO.getId());
             for (SetmealDish setmealDish : setmealDishes) {
-
+                setmealDish.setSetmealId(setmeal.getId());
                 setmealDishesMapper.add(setmealDish);
             }
-
         }
 
     }
 
     /**
      * 修改售卖状态
+     *
      * @param status
      * @param id
      */
     @Override
     @ApiOperation("修改启售状态")
-    public void setStatus(Integer status,long id) {
+    public void setStatus(Integer status, long id) {
         Setmeal s = Setmeal.builder().id(id).status(status).build();
         setmealMapper.update(s);
     }
